@@ -42,35 +42,69 @@ def display_grid(arr, highlighter = '-', highlight = [-1, -1]):
         print()
     print()
 
+def balance_grid_navigation(arr, xy = [0, 0]):
+
+    if(xy[1] >= len(arr[0])): # max y is 7 but our y is >7
+        xy[1] = 0 # y to leftmost
+
+    if(xy[1] < 0): # min y is 0 but our y is < 0
+        xy[1] = len(arr[0]) - 1 # y to rightmost
+        
+    if(xy[0] >= len(arr)): # max x is 7 but our x is >7
+        xy[0] = 0 # x to top
+
+    if(xy[0] < 0): # min x is 0 but our x is < 0
+        xy[0] = len(arr) - 1 # x to bottom
+
+    return xy
+
 def select_grid(arr, msg='', highlighter='-'):
-    begin = [0, 0]
+    cursor = [0, 0]
 
     while True:
         os.system('cls')
-        display_grid(arr, highlighter, begin)
+        display_grid(arr, highlighter, cursor)
         print(msg)
 
         if keyboard.is_pressed("right"):
-            begin[1] = begin[1] + 1
-            
-        elif keyboard.is_pressed("left"):
-            begin[1] = begin[1] - 1
-        elif keyboard.is_pressed("up"):
-            begin[0] = begin[0] - 1
-        elif keyboard.is_pressed("down"):
-            begin[0] = begin[0] + 1
-        elif keyboard.is_pressed("enter"):
-            break
+            cursor = balance_grid_navigation(arr, [cursor[0], cursor[1] + 1])
+        if keyboard.is_pressed("left"):
+            cursor = balance_grid_navigation(arr, [cursor[0], cursor[1] - 1])
+        if keyboard.is_pressed("up"):
+            cursor = balance_grid_navigation(arr, [cursor[0] - 1, cursor[1]])
+        if keyboard.is_pressed("down"):
+            cursor = balance_grid_navigation(arr, [cursor[0] + 1, cursor[1]])
+        if keyboard.is_pressed("enter"):
+            return cursor
 
-        sleep(0.1)
-    
-    pass
+        sleep(0.07)
 
 def game_start(player1, player2):
     grid = numpy.array([['-' for y in range(7)] for x in range(7)])
     display_grid(grid)
 
-    select_grid(grid, "Player [X]: Use arrows to select and 'F' key to place", 'X')
-    pass
+    turns = 0
+    while any('-' in arr for arr in grid):
+        
+        player = '-'
+        if turns % 2 == 0:
+            player = 'X'
+        else:
+            player = 'O'
+
+        position = select_grid(grid, f"Player [{player}]: Use arrows to select and 'ENTER' key to place", player)
+
+        if grid[position[0], position[1]] != '-':
+            print("\nERROR: You cannot place here!")
+            sleep(1.5)
+            continue
+        else:
+            grid[position[0], position[1]] = player
+            turns = turns+1
+            print("\nSUCCESS: Placed!")
+
+            # check for winning...
+            sleep(1)
+    # exhausted all attempts
 
 menu()
