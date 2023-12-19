@@ -9,9 +9,9 @@ def menu():
     while option == -1:
         print("\t\t7x7 TicTacToe\n")
         print("1. Begin a game")
-        print("2. View scores")
-        print("3. View players")
-        print("4. Find player data")
+        print("2. Leaderboard") # sort all players by their max wins
+        print("3. View & sort players") # allow to view all players, also to sort by their scores, turns, asc. desc. etc.
+        print("4. Find player data") # to-do
         option = int(input("\nSelect an option: "))
         print()
 
@@ -92,7 +92,7 @@ def game_start(player1, player2):
         else:
             player = 'O'
 
-        position = select_grid(grid, f"Player [{player}]: Use arrows to select and 'ENTER' key to place", player)
+        position = select_grid(grid, f"Player [{player}]: Use arrows to select and 'ENTER' key to place at the '+'", '+')
 
         if grid[position[0], position[1]] != '-':
             print("\nERROR: You cannot place here!")
