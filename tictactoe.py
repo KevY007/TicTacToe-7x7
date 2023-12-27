@@ -10,8 +10,7 @@ def menu():
         print("\t\t7x7 TicTacToe\n")
         print("1. Begin a game")
         print("2. Leaderboard") # sort all players by their max wins
-        print("3. View & sort players") # allow to view all players, also to sort by their scores, turns, asc. desc. etc.
-        print("4. Find player data") # to-do
+        print("3. Exit")
         option = int(input("\nSelect an option: "))
         print()
 
@@ -21,15 +20,48 @@ def menu():
 
         game_start(player1, player2)
     elif option == 2:
-        pass
+
+        print('\nDisplaying leaderboard:')
+        with open("winners.txt", "r") as file:
+            lines = file.readlines()
+
+            unique_winners = []
+            winner_counts = []
+
+            for line in lines:
+                winner = line.strip() # remove \n (new line character) at the end of name of winner
+
+                if winner in unique_winners:
+                    index = unique_winners.index(winner)
+                    winner_counts[index] += 1
+                else:
+                    unique_winners.append(winner)
+                    winner_counts.append(1)
+
+            n = len(unique_winners)
+
+            for i in range(n): # bubble sort to sort winners and count
+                for j in range(0, n-i-1):
+                    if winner_counts[j] < winner_counts[j+1]:
+                        winner_counts[j], winner_counts[j+1] = winner_counts[j+1], winner_counts[j]
+                        unique_winners[j], unique_winners[j+1] = unique_winners[j+1], unique_winners[j]
+
+            for i in range(len(unique_winners)):
+                print(f"{unique_winners[i]}: {winner_counts[i]} times")
+        
+        input('\nPress ENTER to go back to the menu...\n')
     elif option == 3:
         pass
     elif option == 4:
         pass
+    elif option == 5:
+        return 5
     else:
         print("Invalid option! Going back to the menu...")
         sleep(2)
         menu()
+
+    return -1
 
 def display_grid(arr, highlighter = '-', highlight = [-1, -1]):
     print('\nGrid: ')
@@ -62,6 +94,7 @@ def select_grid(arr, msg='', highlighter='-'):
     cursor = [0, 0]
 
     while True:
+        os.system('clear')
         os.system('cls')
         display_grid(arr, highlighter, cursor)
         print(msg)
@@ -78,6 +111,14 @@ def select_grid(arr, msg='', highlighter='-'):
             return cursor
 
         sleep(0.07)
+
+def game_win(winner):
+    print(f'\n{winner} has won! (4 successive placements)')
+
+    with open('winners.txt', 'a') as file:
+        file.write(winner + '\n')
+
+    sleep(3)
 
 def game_start(player1, player2):
     grid = numpy.array([['-' for y in range(7)] for x in range(7)])
@@ -105,6 +146,82 @@ def game_start(player1, player2):
 
             # check for winning...
             sleep(1)
-    # exhausted all attempts
 
-menu()
+            # check for win in x axis (left-right)
+            successive = 0
+            
+            for i in range(position[0]-4, position[0]+4):
+                if i < 0 or i >= len(grid):
+                    continue
+
+                if grid[i, position[1]] == player:
+                    successive = successive + 1
+                    
+                    if successive == 4:
+                        break
+                else:
+                    successive = 0
+
+            if successive == 4:
+                game_win(player1 if player == 'X' else player2)
+                return
+            
+            # check for win in y axis (up-down)
+            successive = 0
+            
+            for i in range(position[1]-4, position[1]+4):
+                if i < 0 or i >= len(grid[0]):
+                    continue
+
+                if grid[position[0], i] == player:
+                    successive = successive + 1
+                    if successive == 4:
+                        break
+                else:
+                    successive = 0
+
+            if successive == 4:
+                game_win(player1 if player == 'X' else player2)
+                return
+
+            # check for win in primary diagonal
+            successive = 0
+            for i in range(-3, 4):
+                row, col = position[0] + i, position[1] + i
+                if 0 <= row < len(grid) and 0 <= col < len(grid[0]):
+                    if grid[row, col] == player:
+                        successive += 1
+                        if successive == 4:
+                            break
+                    else:
+                        successive = 0
+
+            if successive == 4:
+                game_win(player1 if player == 'X' else player2)
+                return
+
+            # check for win in secondary diagonal
+            successive = 0
+            for i in range(-3, 4):
+                row, col = position[0] + i, position[1] - i
+                if 0 <= row < len(grid) and 0 <= col < len(grid[0]):
+                    if grid[row, col] == player:
+                        successive += 1
+                        if successive == 4:
+                            break
+                    else:
+                        successive = 0
+
+            if successive == 4:
+                game_win(player1 if player == 'X' else player2)
+                return
+            
+
+    # exhausted all attempts
+    print(f'\nStalemate! No one won!')
+    sleep(3)
+    
+
+while True:
+    if menu() == 5:
+        break
