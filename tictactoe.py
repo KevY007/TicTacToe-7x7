@@ -11,7 +11,10 @@ def menu():
         print("1. Begin a game")
         print("2. Leaderboard") # sort all players by their max wins
         print("3. Exit")
-        option = int(input("\nSelect an option: "))
+        try:
+            option = int(input("\nSelect an option: "))
+        except:
+            option = -1
         print()
 
     if option == 1:
