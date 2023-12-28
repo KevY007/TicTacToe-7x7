@@ -54,11 +54,7 @@ def menu():
         
         input('\nPress ENTER to go back to the menu...\n')
     elif option == 3:
-        pass
-    elif option == 4:
-        pass
-    elif option == 5:
-        return 5
+        return 3
     else:
         print("Invalid option! Going back to the menu...")
         sleep(2)
@@ -95,25 +91,34 @@ def balance_grid_navigation(arr, xy = [0, 0]):
 
 def select_grid(arr, msg='', highlighter='-'):
     cursor = [0, 0]
+    update = True
 
     while True:
-        os.system('clear')
-        os.system('cls')
-        display_grid(arr, highlighter, cursor)
-        print(msg)
+        if update:
+            #os.system('clear')
+            os.system('cls')
 
+            display_grid(arr, highlighter, cursor)
+            print(msg)
+            update = False
+
+        
         if keyboard.is_pressed("right"):
             cursor = balance_grid_navigation(arr, [cursor[0], cursor[1] + 1])
+            update = True
         if keyboard.is_pressed("left"):
             cursor = balance_grid_navigation(arr, [cursor[0], cursor[1] - 1])
+            update = True
         if keyboard.is_pressed("up"):
             cursor = balance_grid_navigation(arr, [cursor[0] - 1, cursor[1]])
+            update = True
         if keyboard.is_pressed("down"):
             cursor = balance_grid_navigation(arr, [cursor[0] + 1, cursor[1]])
+            update = True
         if keyboard.is_pressed("enter"):
             return cursor
 
-        sleep(0.07)
+        sleep(0.1)
 
 def game_win(winner):
     print(f'\n{winner} has won! (4 successive placements)')
@@ -136,7 +141,7 @@ def game_start(player1, player2):
         else:
             player = 'O'
 
-        position = select_grid(grid, f"Player [{player}]: Use arrows to select and 'ENTER' key to place at the '+'", '+')
+        position = select_grid(grid, f"Player [{player}]: Hold arrows to select and 'ENTER' key to place at the '+'", '+')
 
         if grid[position[0], position[1]] != '-':
             print("\nERROR: You cannot place here!")
@@ -226,5 +231,5 @@ def game_start(player1, player2):
     
 
 while True:
-    if menu() == 5:
+    if menu() == 3:
         break
